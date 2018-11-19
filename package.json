@@ -4,7 +4,8 @@
   "description": "Blockchain transactions monitoring module.",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "tsc && node build/index.js"
   },
   "keywords": [
     "blockchain",
@@ -14,5 +15,8 @@
     "accounts"
   ],
   "author": "Uroš Damnjanović",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "typescript": "^3.1.6"
+  }
 }
