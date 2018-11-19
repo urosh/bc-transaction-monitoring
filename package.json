@@ -1,0 +1,18 @@
+{
+  "name": "bc-transaction-monitoring",
+  "version": "1.0.0",
+  "description": "Blockchain transactions monitoring module.",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "blockchain",
+    "ethereum",
+    "transactions",
+    "monitoring",
+    "accounts"
+  ],
+  "author": "Uroš Damnjanović",
+  "license": "MIT"
+}
