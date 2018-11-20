@@ -1,18 +1,16 @@
-const addAddress = addr => {
-
-}
-
-const init = () => {
-  // Check the config
-  console.log('Init');
 
 
-}
 
-init();
+export class BlockhainMonitor {
+  public constructor () {
 
+  }
+  
+  private init() {
 
-export {
-  addAddress,
-  init
+  }
+
+  private addAddress() {
+
+  }
 }
