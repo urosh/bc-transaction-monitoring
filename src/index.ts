@@ -1,10 +1,13 @@
 export class BlockhainMonitor {
   private checkInterval: any;
-  private checkIntervalValue: number;
+  private _checkIntervalValue: number;
   public constructor (config?: Config) {
-    this.checkIntervalValue = config.checkInterval || 15000;
+    this._checkIntervalValue = config && config.checkInterval ? config.checkInterval : 15000;
   }
   
+  get checkIntervalValue(): number {
+    return this._checkIntervalValue;
+  }
   private init() {
     clearTimeout(this.checkInterval);
     setTimeout(this.checkUpdates, this.checkIntervalValue);
