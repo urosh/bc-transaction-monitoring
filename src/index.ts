@@ -5,15 +5,16 @@ export class BlockhainMonitor {
   private _checkIntervalValue: number;
   private _network: string;
   private web3: any;
+  private defaultNetwork: string = 'testnet';
   private providers = {
     'testnet': `wss://ropsten.infura.io/ws`,
-    'mainnnet': `wss://mainnet.infura.io/ws`
+    'mainnet': `wss://mainnet.infura.io/ws`
   }
   public lastCheckedBlock: number;
 
   public constructor (config: Config) {
     this._checkIntervalValue = config.checkInterval || 15000;
-    this._network = config.network || 'testnet';
+    this.setNetwork(config);
     const provider = new Web3.providers.WebsocketProvider(this.providers[this._network]);
     this.web3 = new Web3(provider);
     this.web3.eth.net.isListening()
@@ -36,6 +37,10 @@ export class BlockhainMonitor {
 
   get network(): string {
     return this._network;
+  }
+
+  private setNetwork(config: Config) {
+    this._network = (config.network && this.providers[config.network] ? config.network : false )  || 'testnet';
   }
   private init() {
     clearTimeout(this.checkInterval);
