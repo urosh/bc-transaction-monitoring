@@ -50,4 +50,6 @@ describe('Setting network parameter', () => {
   test('Skip network', () => {
     expect(bM4.network).toBe('testnet');
   })
-})
+});
+
+

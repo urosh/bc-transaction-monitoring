@@ -1,48 +1,41 @@
-const Web3 = require('web3');
+const web3 = require("web3");
 
 export class BlockhainMonitor {
   private checkInterval: any;
-  private _checkIntervalValue: number;
-  private _network: string;
+  private intervalValue: number;
+  private networkType: string;
   private web3: any;
-  private defaultNetwork: string = 'testnet';
+  private defaultNetwork: string = "testnet";
   private providers = {
-    'testnet': `wss://ropsten.infura.io/ws`,
-    'mainnet': `wss://mainnet.infura.io/ws`
-  }
+    testnet: `wss://ropsten.infura.io/ws`,
+    mainnet: `wss://mainnet.infura.io/ws`
+  };
   public lastCheckedBlock: number;
 
-  public constructor (config: Config) {
-    this._checkIntervalValue = config.checkInterval || 15000;
+  public constructor(config: Config) {
+    this.intervalValue = config.checkInterval || 15000;
     this.setNetwork(config);
-    const provider = new Web3.providers.WebsocketProvider(this.providers[this._network]);
-    this.web3 = new Web3(provider);
-    this.web3.eth.net.isListening()
-        .then(() => {
-            console.log('Monitoring the blockchain');
-        })
-        .catch(e => {
-            console.log('Error');
-        });
-
-    provider.on('end', (e) => {
-        //this.reconnectToEtherscan(e);
-    });
-
+    const provider = new web3.providers.WebsocketProvider(
+      this.providers[this.network]
+    );
+    this.web3 = new web3(provider);
   }
-  
+
   get checkIntervalValue(): number {
-    return this._checkIntervalValue;
+    return this.intervalValue;
   }
 
   get network(): string {
-    return this._network;
+    return this.networkType;
   }
 
   private setNetwork(config: Config) {
-    this._network = (config.network && this.providers[config.network] ? config.network : false )  || 'testnet';
+    this.networkType =
+      (config.network && this.providers[config.network]
+        ? config.network
+        : false) || 'testnet';
   }
-  private init() {
+  private startMonitoring() {
     clearTimeout(this.checkInterval);
     setTimeout(this.checkUpdates, this.checkIntervalValue);
   }
@@ -53,9 +46,7 @@ export class BlockhainMonitor {
     // Get current block
   }
 
-  private addAddress() {
-
-  }
+  private addAddress() {}
 }
 
 interface Config {
@@ -63,4 +54,3 @@ interface Config {
   infuraApiKey: string;
   network?: string;
 }
-
