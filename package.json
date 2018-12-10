@@ -19,8 +19,10 @@
   "author": "Uroš Damnjanović",
   "license": "MIT",
   "dependencies": {
-    "tslint-config-airbnb": "^5.11.1",
-    "typescript": "^3.1.6"
+    "async": "^2.6.1",
+    "ethers": "^4.0.18",
+    "random-blockchain-addresses": "^1.0.3",
+    "tslint-config-airbnb": "^5.11.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.0",
@@ -34,7 +36,6 @@
     "eslint-plugin-import": "^2.14.0",
     "jest": "^23.6.0",
     "mocha": "^5.2.0",
-    "random-blockchain-addresses": "^1.0.3",
     "rewire": "^4.0.1",
     "ts-jest": "^23.10.4",
     "ts-node": "^7.0.1",

@@ -1,6 +1,7 @@
 const Web3 = require("web3");
-
+const ethers = require("ethers");
 const randomBlockchainAddresses = require("random-blockchain-addresses");
+const etherscanProvider = new ethers.providers.EtherscanProvider('ropsten');
 // export class BlockhainMonitor {
 //   private checkInterval: any;
 //   private intervalValue: number;
@@ -56,20 +57,53 @@ const randomBlockchainAddresses = require("random-blockchain-addresses");
 class BlockhainMonitor {
   constructor(config) {
     this.intervalValue = (config && config.checkInterval) || 15000;
-    //this.setNetwork(config);
-    //const provider = new web3.providers.WebsocketProvider(this.providers[this.networkType]);
-    //this.web3 = new web3(provider);
+    // this.setNetwork(config);
+    // const provider = new web3.providers.WebsocketProvider(this.providers[this.networkType]);
+    // this.web3 = new web3(provider);
     BlockhainMonitor.startMonitoring();
   }
 
+  setProvider(config) {
+    this.provider = config && config.provider ? config.provider : ''
+  }
+
+  async importAddresses(addresses) {
+    this.addresses = [...addresses];
+
+    console.log("We got the array of addresses to start", addresses);
+    
+    addresses.map(async (addr) => {
+      const h = await etherscanProvider.getHistory(addr, 0, 'latest');
+      console.log(h);
+    });
+
+    console.log('Completing the request');
+    // For each address we need to call etherscan and get its transactions
+
+  }
+
+  // How do we initialize the module
+
   static async startMonitoring() {
-    const addrs = await randomBlockchainAddresses.getAddresses(20, "testnet");
-    console.log(addrs);
+    //console.log(addrs);
+  }
+
+  onEvent() {
+    console.log("Another event");
   }
 }
 
-new BlockhainMonitor();
+const bcMonitor = new BlockhainMonitor();
 
+bcMonitor.onEvent(() => {
+  console.log("We received events");
+});
+
+const runMonitor = async () => {
+  const addrs = await randomBlockchainAddresses.getAddresses(10, "ropsten");
+  //console.log(addrs);
+  bcMonitor.importAddresses(addrs);
+};
 // What i need here
 
 // Need to iniitalize module
@@ -88,3 +122,5 @@ new BlockhainMonitor();
 //   infuraApiKey: string;
 //   network?: string;
 // }
+
+runMonitor();
