@@ -1,7 +1,9 @@
-const Web3 = require("web3");
 const ethers = require("ethers");
 const randomBlockchainAddresses = require("random-blockchain-addresses");
-const etherscanProvider = new ethers.providers.EtherscanProvider('ropsten');
+const async = require("async");
+
+const etherscanProvider = new ethers.providers.EtherscanProvider("ropsten");
+
 // export class BlockhainMonitor {
 //   private checkInterval: any;
 //   private intervalValue: number;
@@ -64,22 +66,40 @@ class BlockhainMonitor {
   }
 
   setProvider(config) {
-    this.provider = config && config.provider ? config.provider : ''
+    this.provider = config && config.provider ? config.provider : "";
+  }
+
+  static getHistory(addr) {
+    return async.asyncify (async () => {
+      console.log('I got called');
+      //console.log(callback);
+      const response = await etherscanProvider.getHistory(addr, 0, "latest");
+      //callback(null, response);
+    });
   }
 
   async importAddresses(addresses) {
     this.addresses = [...addresses];
 
     console.log("We got the array of addresses to start", addresses);
-    
-    addresses.map(async (addr) => {
-      const h = await etherscanProvider.getHistory(addr, 0, 'latest');
+    const calls = this.addresses.map(addr => BlockhainMonitor.getHistory(addr));
+    console.log(calls);
+    // async.parallel(calls, (err, results) => {
+    //   if (err) {
+    //     console.log("We got error", err);
+    //     return;
+    //   }
+
+    //   console.log("We got our results");
+    //   console.log(results.length);
+    // });
+    addresses.map(async addr => {
+      const h = await etherscanProvider.getHistory(addr, 0, "homestead");
       console.log(h);
     });
 
-    console.log('Completing the request');
+    console.log("Completing the request");
     // For each address we need to call etherscan and get its transactions
-
   }
 
   // How do we initialize the module
@@ -100,7 +120,7 @@ bcMonitor.onEvent(() => {
 });
 
 const runMonitor = async () => {
-  const addrs = await randomBlockchainAddresses.getAddresses(10, "ropsten");
+  const addrs = await randomBlockchainAddresses.getAddresses(60, "homestead");
   //console.log(addrs);
   bcMonitor.importAddresses(addrs);
 };
