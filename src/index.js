@@ -4,6 +4,7 @@ const async = require("async");
 
 const etherscanProvider = new ethers.providers.EtherscanProvider("ropsten");
 
+const DEFAULT_CHECK_INTERVAL = 15000;
 // export class BlockhainMonitor {
 //   private checkInterval: any;
 //   private intervalValue: number;
@@ -57,55 +58,47 @@ const etherscanProvider = new ethers.providers.EtherscanProvider("ropsten");
 // }
 
 class BlockhainMonitor {
+  
   constructor(config) {
-    this.intervalValue = (config && config.checkInterval) || 15000;
+    this.processConfig(config);
     // this.setNetwork(config);
     // const provider = new web3.providers.WebsocketProvider(this.providers[this.networkType]);
     // this.web3 = new web3(provider);
-    BlockhainMonitor.startMonitoring();
+    //BlockhainMonitor.startMonitoring();
   }
-
+  
+  processConfig(config) {
+    // time check interval
+    this.monitorCheckInterval = (config && config.monitorCheckInterval) ? config.monitorCheckInterval : DEFAULT_CHECK_INTERVAL;
+    
+    if (Number.isNaN(this.monitorCheckInterval)) {
+      this.monitorCheckInterval = DEFAULT_CHECK_INTERVAL;
+    }
+    
+    console.log(this.monitorCheckInterval);
+    // provider 
+  }
   setProvider(config) {
     this.provider = config && config.provider ? config.provider : "";
   }
-
-  static getHistory(addr) {
-    return async.asyncify (async () => {
-      console.log('I got called');
-      //console.log(callback);
-      const response = await etherscanProvider.getHistory(addr, 0, "latest");
-      //callback(null, response);
-    });
-  }
-
+  
   async importAddresses(addresses) {
     this.addresses = [...addresses];
+  }
+  
+  // How do we initialize the module
+  
+  monitor(addresses) {
+    // For every address, check 
+    // get current block
+    // get transactions from current to last checked block
 
-    console.log("We got the array of addresses to start", addresses);
-    const calls = this.addresses.map(addr => BlockhainMonitor.getHistory(addr));
-    console.log(calls);
-    // async.parallel(calls, (err, results) => {
-    //   if (err) {
-    //     console.log("We got error", err);
-    //     return;
-    //   }
-
-    //   console.log("We got our results");
-    //   console.log(results.length);
-    // });
-    addresses.map(async addr => {
-      const h = await etherscanProvider.getHistory(addr, 0, "homestead");
-      console.log(h);
-    });
-
-    console.log("Completing the request");
-    // For each address we need to call etherscan and get its transactions
+    //console.log(addrs);
+    setTimeout(this.checkTransactions, this.monitorCheckInterval);
   }
 
-  // How do we initialize the module
+  checkTransactions() {
 
-  static async startMonitoring() {
-    //console.log(addrs);
   }
 
   onEvent() {
@@ -120,9 +113,10 @@ bcMonitor.onEvent(() => {
 });
 
 const runMonitor = async () => {
-  const addrs = await randomBlockchainAddresses.getAddresses(60, "homestead");
+  const addrs = await randomBlockchainAddresses.getAddresses(30, "ropsten");
   //console.log(addrs);
-  bcMonitor.importAddresses(addrs);
+  console.log('we got the addresses');
+  bcMonitor.monitor(addrs);
 };
 // What i need here
 
