@@ -1,121 +1,78 @@
-const ethers = require("ethers");
-const randomBlockchainAddresses = require("random-blockchain-addresses");
-const async = require("async");
-
-const etherscanProvider = new ethers.providers.EtherscanProvider("ropsten");
+const randomBlockchainAddresses = require('random-blockchain-addresses');
+const Web3 = require('web3');
 
 const DEFAULT_CHECK_INTERVAL = 15000;
-// export class BlockhainMonitor {
-//   private checkInterval: any;
-//   private intervalValue: number;
-//   private networkType: string;
-//   private web3: any;
-//   private defaultNetwork: string = 'testnet';
-//   private providers = {
-//     testnet: 'wss://ropsten.infura.io/ws',
-//     mainnet: 'wss://mainnet.infura.io/ws',
-//   };
-//   public lastCheckedBlock: number;
+const PROVIDERS = ['ropsten', 'kovan', 'rinkeby', 'mainnet'];
 
-//   public constructor(config?: Config) {
-//     this.intervalValue = (config && config.checkInterval) || 15000;
-//     this.setNetwork(config);
-//     const provider = new web3.providers.WebsocketProvider(this.providers[this.networkType]);
-//     this.web3 = new web3(provider);
-//     this.startMonitoring();
-//   }
-
-//   get checkIntervalValue(): number {
-//     return this.intervalValue;
-//   }
-
-//   get network(): string {
-//     return this.networkType;
-//   }
-
-//   private setNetwork(config: Config) {
-//     this.networkType =
-//       (config.network && this.providers[config.network]
-//         ? config.network
-//         : false) || 'testnet';
-//   }
-//   private  async startMonitoring(): Promise<any> {
-//     clearTimeout(this.checkInterval);
-//     setTimeout(this.checkUpdates, this.checkIntervalValue);
-
-//     console.debug('We want to generate addresses');
-//     const addrs = await randomBlockchainAddresses.getAddresses(20, this.networkType);
-//     console.debug(addrs);
-//   }
-
-//   private checkUpdates() {
-//     // Need to get the last checked block
-//     // Need to decide where to store the data
-//     // Get current block
-//   }
-
-//   private addAddress() {}
-// }
+const PROVIDER_URLS = {
+  [PROVIDERS[0]]: 'https://ropsten.infura.io/v3/4364c567a49e415b98d16210a604f06c',
+  [PROVIDERS[1]]: 'https://ropsten.infura.io/v3/4364c567a49e415b98d16210a604f06c',
+  [PROVIDERS[2]]: 'https://rinkeby.infura.io/v3/4364c567a49e415b98d16210a604f06c',
+  [PROVIDERS[3]]: 'https://mainnet.infura.io/v3/4364c567a49e415b98d16210a604f06c',
+};
 
 class BlockhainMonitor {
-  
   constructor(config) {
     this.processConfig(config);
-    // this.setNetwork(config);
-    // const provider = new web3.providers.WebsocketProvider(this.providers[this.networkType]);
-    // this.web3 = new web3(provider);
-    //BlockhainMonitor.startMonitoring();
+    this.web3 = new Web3(new Web3.providers.HttpProvider(PROVIDER_URLS[this.provider]));
   }
-  
+
   processConfig(config) {
     // time check interval
-    this.monitorCheckInterval = (config && config.monitorCheckInterval) ? config.monitorCheckInterval : DEFAULT_CHECK_INTERVAL;
-    
+    this.monitorCheckInterval =
+      config && config.monitorCheckInterval
+        ? config.monitorCheckInterval
+        : DEFAULT_CHECK_INTERVAL;
+
     if (Number.isNaN(this.monitorCheckInterval)) {
       this.monitorCheckInterval = DEFAULT_CHECK_INTERVAL;
     }
-    
-    console.log(this.monitorCheckInterval);
-    // provider 
+
+    this.provider = config && config.provider ? config.provider : PROVIDERS[0];
+
+    if (PROVIDERS.indexOf(this.provider) === -1) {
+      [this.provider] = PROVIDERS;
+    }
   }
-  setProvider(config) {
-    this.provider = config && config.provider ? config.provider : "";
-  }
-  
+
   async importAddresses(addresses) {
     this.addresses = [...addresses];
   }
-  
-  // How do we initialize the module
-  
-  monitor(addresses) {
-    // For every address, check 
-    // get current block
-    // get transactions from current to last checked block
 
-    //console.log(addrs);
-    setTimeout(this.checkTransactions, this.monitorCheckInterval);
+  // How do we initialize the module
+
+  monitor(addresses) {
+    this.addresses = [...addresses];
+    setTimeout(this.checkTransactions.bind(this), this.monitorCheckInterval);
   }
 
-  checkTransactions() {
-
+  async checkTransactions() {
+    console.log(this.web3);
+    // chose strategy
+    if (!this.lastCheckedBlock) {
+      this.lastCheckedBlock = await this.web3.getBlockNumber();
+      console.log(this.lastCheckedBlock);
+      setTimeout(this.checkTransactions, this.monitorCheckInterval);
+      return;
+    }
+    //
   }
 
   onEvent() {
-    console.log("Another event");
+    console.log('Another event');
   }
 }
 
-const bcMonitor = new BlockhainMonitor();
+const bcMonitor = new BlockhainMonitor({
+  monitorCheckInterval: 1000
+});
 
 bcMonitor.onEvent(() => {
-  console.log("We received events");
+  console.log('We received events');
 });
 
 const runMonitor = async () => {
-  const addrs = await randomBlockchainAddresses.getAddresses(30, "ropsten");
-  //console.log(addrs);
-  console.log('we got the addresses');
+  const addrs = await randomBlockchainAddresses.getAddresses(30, 'ropsten');
   bcMonitor.monitor(addrs);
 };
 // What i need here
