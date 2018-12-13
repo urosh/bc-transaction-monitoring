@@ -4,22 +4,37 @@ const Web3 = require("web3");
 const DEFAULT_CHECK_INTERVAL = 15000;
 const PROVIDERS = ["ropsten", "kovan", "rinkeby", "mainnet"];
 
-const PROVIDER_URLS = {
+const ETHERSCAN_API_KEY = 'Z1VB5VHXQEPNFIPHPCBJDQYMS6ZUJUJXCD';
+const INFURA_API_KEY = '4364c567a49e415b98d16210a604f06c';
+
+const INFURA_PROVIDER_URLS = {
   [PROVIDERS[0]]:
-    "https://ropsten.infura.io/v3/4364c567a49e415b98d16210a604f06c",
+    `https://ropsten.infura.io/v3/${INFURA_API_KEY}`,
   [PROVIDERS[1]]:
-    "https://ropsten.infura.io/v3/4364c567a49e415b98d16210a604f06c",
+    `https://ropsten.infura.io/v3/${INFURA_API_KEY}`,
   [PROVIDERS[2]]:
-    "https://rinkeby.infura.io/v3/4364c567a49e415b98d16210a604f06c",
+    `https://rinkeby.infura.io/v3/${INFURA_API_KEY}`,
   [PROVIDERS[3]]:
-    "https://mainnet.infura.io/v3/4364c567a49e415b98d16210a604f06c"
+    `https://mainnet.infura.io/v3/${INFURA_API_KEY}`,
 };
+
+const ETHERSCAN_PROVIDER_URLS = {
+  [PROVIDERS[0]]:
+    `https://ropsten.etherscan.io/${ETHERSCAN_API_KEY}`,
+  [PROVIDERS[1]]:
+    `https://kovan.etherscan.io/${ETHERSCAN_API_KEY}`,
+  [PROVIDERS[2]]:
+    `https://rinkeby.etherscan.io/${ETHERSCAN_API_KEY}`,
+  [PROVIDERS[3]]:
+    `https://etherscan.io${ETHERSCAN_API_KEY}`
+};
+
 
 class BlockhainMonitor {
   constructor(config) {
     this.processConfig(config);
     this.web3 = new Web3(
-      new Web3.providers.HttpProvider(PROVIDER_URLS[this.provider])
+      new Web3.providers.HttpProvider(INFURA_PROVIDER_URLS[this.provider])
     );
   }
 
@@ -69,6 +84,16 @@ class BlockhainMonitor {
     }
     //
   }
+
+  async blockBasedCheck() {
+
+  }
+
+  async walletBasedCheck() {
+
+  }
+
+
 
   onEvent() {
     console.log("Another event");
