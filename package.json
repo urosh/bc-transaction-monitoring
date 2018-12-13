@@ -4,7 +4,7 @@
   "description": "Blockchain transactions monitoring module.",
   "main": "index.ts",
   "scripts": {
-    "test": "jest --config jestconfig.json",
+    "test": "jest",
     "start": "nodemon --exec babel-node src/index.js",
     "build": "babel src --out-dir dist",
     "serve": "node dist"
@@ -37,9 +37,6 @@
     "jest": "^23.6.0",
     "mocha": "^5.2.0",
     "rewire": "^4.0.1",
-    "ts-jest": "^23.10.4",
-    "ts-node": "^7.0.1",
-    "tslint": "^5.11.0",
     "web3": "^1.0.0-beta.36"
   }
 }

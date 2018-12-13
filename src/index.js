@@ -1,20 +1,26 @@
-const randomBlockchainAddresses = require('random-blockchain-addresses');
-const Web3 = require('web3');
+const randomBlockchainAddresses = require("random-blockchain-addresses");
+const Web3 = require("web3");
 
 const DEFAULT_CHECK_INTERVAL = 15000;
-const PROVIDERS = ['ropsten', 'kovan', 'rinkeby', 'mainnet'];
+const PROVIDERS = ["ropsten", "kovan", "rinkeby", "mainnet"];
 
 const PROVIDER_URLS = {
-  [PROVIDERS[0]]: 'https://ropsten.infura.io/v3/4364c567a49e415b98d16210a604f06c',
-  [PROVIDERS[1]]: 'https://ropsten.infura.io/v3/4364c567a49e415b98d16210a604f06c',
-  [PROVIDERS[2]]: 'https://rinkeby.infura.io/v3/4364c567a49e415b98d16210a604f06c',
-  [PROVIDERS[3]]: 'https://mainnet.infura.io/v3/4364c567a49e415b98d16210a604f06c',
+  [PROVIDERS[0]]:
+    "https://ropsten.infura.io/v3/4364c567a49e415b98d16210a604f06c",
+  [PROVIDERS[1]]:
+    "https://ropsten.infura.io/v3/4364c567a49e415b98d16210a604f06c",
+  [PROVIDERS[2]]:
+    "https://rinkeby.infura.io/v3/4364c567a49e415b98d16210a604f06c",
+  [PROVIDERS[3]]:
+    "https://mainnet.infura.io/v3/4364c567a49e415b98d16210a604f06c"
 };
 
 class BlockhainMonitor {
   constructor(config) {
     this.processConfig(config);
-    this.web3 = new Web3(new Web3.providers.HttpProvider(PROVIDER_URLS[this.provider]));
+    this.web3 = new Web3(
+      new Web3.providers.HttpProvider(PROVIDER_URLS[this.provider])
+    );
   }
 
   processConfig(config) {
@@ -47,19 +53,25 @@ class BlockhainMonitor {
   }
 
   async checkTransactions() {
-    console.log(this.web3);
+    const currentBlock = await this.web3.getBlock();
     // chose strategy
     if (!this.lastCheckedBlock) {
-      this.lastCheckedBlock = await this.web3.getBlockNumber();
-      console.log(this.lastCheckedBlock);
+      this.lastCheckedBlock = currentBlock;
       setTimeout(this.checkTransactions, this.monitorCheckInterval);
       return;
+    }
+
+    // choose strategy
+    if (currentBlock - this.lastCheckedBlock < this.addresses.length) {
+      // we can go with the block based strategy
+    } else {
+      // we go with address by address strategy from etherscan
     }
     //
   }
 
   onEvent() {
-    console.log('Another event');
+    console.log("Another event");
   }
 }
 
@@ -68,11 +80,11 @@ const bcMonitor = new BlockhainMonitor({
 });
 
 bcMonitor.onEvent(() => {
-  console.log('We received events');
+  console.log("We received events");
 });
 
 const runMonitor = async () => {
-  const addrs = await randomBlockchainAddresses.getAddresses(30, 'ropsten');
+  const addrs = await randomBlockchainAddresses.getAddresses(30, "ropsten");
   bcMonitor.monitor(addrs);
 };
 // What i need here
